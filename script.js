@@ -1,6 +1,8 @@
 window.onload = () => {
     addEmailValidator();
     addCountryValidator();
+    addZipValidator();
+    addPasswordValidator();
 }
 
 function addEmailValidator() {
@@ -237,16 +239,15 @@ function addCountryValidator() {
         "Zambia",
         "Zimbabwe", 
     ]
-
+    
     countries.forEach(country => {
         const option = document.createElement('option');
         option.value = country;
         option.textContent = country;
         document.querySelector('select#countries').appendChild(option);
     })
-
+    
     const country = document.querySelector('select#countries')
-    // const countryError = document.querySelector('select#countries')
     const countryError = document.querySelector('label[for="countries"]>div');
     document.querySelector('select#countries').addEventListener('change', () => {
         if (document.querySelector('option[value="placeholder"]').selected) {
@@ -257,4 +258,50 @@ function addCountryValidator() {
             countryError.textContent = '';
         }
     });
+}
+
+function addZipValidator() {
+    zip = document.querySelector('label[for="zip"]>input');
+    zipError = document.querySelector('label[for="zip"]>div')
+    
+    zip.addEventListener('input', () => {
+        //not numbers only.
+        let validZip = true;
+        const errors = [];
+        const numbersOnly = /[^0-9]/;
+        if (numbersOnly.test(zip.value)) {
+            errors.push('Numbers only, ');
+            validZip = false;
+        }
+        
+        // fewer than 5 numbers.
+        if (zip.value.length < 5) {
+            errors.push('Too short, ');
+            validZip = false;
+        }
+        
+        // more than 5 but fewer than 9
+        if (zip.value.length > 5 && zip.value.length < 9) {
+            errors.push('Too short for long zip format, ');
+            validZip = false;
+        } 
+        
+        // . more than 9 numbers
+        if (zip.value.length > 9) {
+            errors.push('Too long, ');
+            validZip = false;
+        }
+
+        if (!validZip) {
+            zip.classList = 'inputError';
+            zipError.textContent = 'Invalid zip: ';
+            errors.forEach(error => {
+                zipError.textContent += error;
+            })
+            zipError.textContent = zipError.textContent.slice(0,zipError.textContent.length - 2);
+        } else {
+            zip.classList = '';
+            zipError.textContent = '';
+        }
+    })
 }
